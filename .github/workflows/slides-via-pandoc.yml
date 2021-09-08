@@ -1,0 +1,34 @@
+name: slides-via-pandoc
+
+on: 
+  push:
+    branches:
+      - main
+
+jobs:
+  convert_via_pandoc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.1
+        with:
+          ref: main
+
+      - name: Make docs folder
+        run: mkdir docs
+
+      - name: Convert
+        uses: docker://pandoc/core:latest
+        with:
+          args: >-  # allows you to break string into multiple lines
+            --self-contained   
+            -t revealjs
+            -V theme=moon
+            -o docs/index.html
+            presentation.md
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          branch: pages # The branch the action should deploy to.
+          folder: docs # The folder the action should deploy.
